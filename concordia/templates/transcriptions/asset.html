@@ -20,10 +20,10 @@
                            href="#tab-transcription" role="tab" aria-controls="tab-transcription"
                            aria-selected="true" onclick="return show_buttons()">Transcription</a>
                         <a class="nav-item nav-link" id="nav-pill-tag" data-toggle="tab" href="#tab-tag" role="tab"
-                           aria-controls="tab-tag" aria-selected="false" onclick="return hide_buttons('tags')">Tags</a>
+                           aria-controls="tab-tag" aria-selected="false" onclick="return hide_buttons()">Tags</a>
                         <a class="nav-item nav-link" id="nav-pill-discussion" data-toggle="tab" href="#tab-discussion"
                            role="tab" aria-controls="tab-discussion" aria-selected="false"
-                           onclick="return hide_buttons('discussion')">Discussion</a>
+                           onclick="return hide_buttons()">Discussion</a>
                     </div>
                 </nav>
                 <form class="mx-half" id="contribute-form" method="post">
@@ -175,14 +175,11 @@
         });
     </script>
     <script type="text/javascript">
-    function hide_buttons(tab_name) {
+    function hide_buttons() {
         $("#review_button").hide();
         $("#complete_button").hide();
         {% if not user.is_authenticated %}
-            $("#save_button").hide();
-            if (tab_name == 'tags') {
-                $("#tag-input").attr('disabled', true);
-            }
+           $("#save_button").hide();
         {% endif %}
         return true;
     }
@@ -193,10 +190,7 @@
 
         $("#transcription-input").attr('disabled', false);
 
-        {% if not user.is_authenticated and not transcription.status %}
-            $("#save_button").show();
-            $("#review_button").show();
-        {% elif not user.is_authenticated and transcription.status != 'Edit'%}
+        {% if not user.is_authenticated and transcription.status != 'Edit' %}
             $("#save_button").hide();
             $("#review_button").hide();
             $("#transcription-input").attr('disabled', true);
