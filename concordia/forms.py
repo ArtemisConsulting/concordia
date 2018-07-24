@@ -4,6 +4,9 @@ from django import forms
 from django.contrib.auth import get_user_model
 from registration.forms import RegistrationForm
 
+from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+
 User = get_user_model()
 logger = getLogger(__name__)
 ROLE_CHOICES = (("admin", ("Admin")), ("cm", ("Content Manager")), ("user", ("User")))
@@ -38,6 +41,7 @@ class ConcordiaUserForm(RegistrationForm):
             attrs={"class": "form-control", "placeholder": "Confirm"}
         ),
     )
+    captcha = ReCaptchaField(widget=ReCaptchaWidget())
 
     class Meta:
         model = User

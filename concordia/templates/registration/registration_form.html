@@ -1,4 +1,11 @@
-{% extends "base.html" %} {% block title %}Account Registration{% endblock title %} {% block main_content %}
+
+{% extends "base.html" %}
+{% load recaptcha2 %}
+{% block title %}Account Registration XXX{% endblock title %}
+{% block head_content %}
+{% recaptcha_init %}
+{% endblock head_content %}
+{% block main_content %}
 <div class="container-fluid">
     <div class="row">
         <div class="col-8 col-md-6 col-lg-4 mx-auto bg-offwhite rounded shadow-regular container-registration">
@@ -49,9 +56,18 @@
                     <label class="sr-only" for="id_password2">Confirm password</label>
                     {{ form.password2 }}
                 </div>
+                <div class="form-group form-row">
+                    {% if form.captcha.errors %}
+                        <div class="text-danger">
+                            {% for error in form.captcha.errors %}{{ error }} {% endfor %}
+                        </div>
+                    {% endif %}
+                    {{ form.captcha }}
+                </div>
                 <div class="d-flex col mx-auto justify-content-center pt-half">
                     <a href="{% url 'login' %}" class="text-center blue-text">I already have an account</a>
                 </div>
+
                 <div class="d-flex mx-auto justify-content-center mb-default mt-half">
                     <input class="btn btn-primary" type="submit" value="Register" id="registration-submit">
                 </div>
