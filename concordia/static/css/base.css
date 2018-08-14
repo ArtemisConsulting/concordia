@@ -457,11 +457,34 @@ input {
 
 .instruction-button {
     z-index: 3;
+    left: 0;
+    bottom: 0;
 }
 
 .instructionCollapse {
     z-index: 3;
+    /*bottom: 0;*/
+
 }
+
+.instructionCollapse.collapsing {
+    height: auto;
+    -webkit-transition: left 0.3s ease;
+    -o-transition: left 0.3s ease;
+    -moz-transition: left 0.3s ease;
+    transition: left 0.3s ease;
+    bottom: -100%;
+}
+
+.instructionCollapse.show {
+    bottom: 0;
+    -webkit-transition: left 0.3s ease-in;
+    -o-transition: left 0.3s ease-in;
+    -moz-transition: left 0.3s ease-in;
+    transition: left 0.3s ease-in;
+}
+
+
 
 .card-body {
     padding: 1rem 0.5rem;
