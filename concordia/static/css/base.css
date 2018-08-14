@@ -455,6 +455,14 @@ input {
   color: var(--text-color-offwhite);
 }
 
+.instruction-button {
+    z-index: 3;
+}
+
+.instructionCollapse {
+    z-index: 3;
+}
+
 .card-body {
     padding: 1rem 0.5rem;
 }
