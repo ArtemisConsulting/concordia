@@ -16,14 +16,14 @@
 
               <div class="col col-3 card">
                 <div class="card-body">
-                    <h5 class="card-title"> 50% Complete</h5>
-                    <p class="card-text"> Start Contributing</p>
+                    <h5 class="card-title">Collection Metrics with status bar</h5>
+                    <p class="card-text"> START CONTRIBUTING</p>
                 </div>
               </div>
 
               <div class="col col-6 card">
                 <div class="card-body">
-                    <h5 class="card-title"> {{ c.title }}</h5>
+                    <a href="{% url 'transcriptions:collection' c.slug %}"  class="card-link">{{ c.title }}</a>
                     <p class="card-text"> {{ c.description }}</p>
                 </div>
               </div>
