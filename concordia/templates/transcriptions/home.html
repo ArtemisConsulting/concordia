@@ -9,7 +9,7 @@
         <div class="container d-flex flex-wrap mb-default justify-content-around">
           {% if response.results %}
           {% for c in response.results %}
-          <div class="row col-12">
+          <div class="row col-12 d-flex flex-wrap mb-default justify-content-around">
               <div class="col col-3 card">
                 <img class="card-img card-img-collection" alt="{{ c.slug }}" src="{% if c.s3_storage %}{{ c.media_url }}{% else %}{{ MEDIA_URL }}{{c.media_url }}{% endif %}">
               </div>
