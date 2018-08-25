@@ -6,26 +6,43 @@
     <div class="col-md-10 mx-auto bg-offwhite rounded">
       <h3 class="mt-default ml-half mb-default">Collections</h3>
       <div class="row">
-        <div class="d-flex flex-wrap col-12 mb-default justify-content-around">
+        <div class="container d-flex flex-wrap mb-default justify-content-around">
           {% if response.results %}
           {% for c in response.results %}
-          <div class="col-12 col-md-4 col-lg-3 mb-default mx-quarter card shadow-regular bg-lightest-gray">
-            <div class="card-body bg-offwhite">
-              <h5 class="card-title align-text-middle w-100">{{ c.title }}</h5>
-              <h6 class="card-text mb-half">{{ c.description }}</h6>
-              <div class="col-md-8 mx-auto text-center">
-                <a href="{% url 'transcriptions:collection' c.slug %}" class="btn btn-primary col mb-quarter">View</a>
-                {% if request.user.is_staff %}
-                  <a href="{% url 'transcriptions:delete collection' c.slug %}" class="btn btn-danger col mb-quarter">Delete</a>
-                  <a href="{% url 'transcriptions:exportCSV collection' c.slug %}" class="btn btn-success col mb-quarter">Export to csv</a>
-                  <a href="{% url 'transcriptions:exportBagit collection' c.slug %}" class="btn btn-success col">Export to Bagit</a>
-                  <a href="{% url 'transcriptions:report collection' c.slug %}" class="mt-half">Report</a>
-                {% endif %}
+          <div class="row col-12">
+              <div class="col col-3 card">
+                <img class="card-img card-img-collection" alt="{{ c.slug }}" src="{% if c.s3_storage %}{{ c.media_url }}{% else %}{{ MEDIA_URL }}{{c.media_url }}{% endif %}">
               </div>
-            </div>
+
+              <div class="col col-3 card">
+                <div class="card-body">
+                    <h5 class="card-title"> 50% Complete</h5>
+                    <p class="card-text"> Start Contributing</p>
+                </div>
+              </div>
+
+              <div class="col col-6 card">
+                <div class="card-body">
+                    <h5 class="card-title"> {{ c.title }}</h5>
+                    <p class="card-text"> {{ c.description }}</p>
+                </div>
+              </div>
+            <!--<div class="card-body bg-offwhite">-->
+              <!--<h5 class="card-title align-text-middle w-100">{{ c.title }}</h5>-->
+              <!--<h6 class="card-text mb-half">{{ c.description }}</h6>-->
+              <!--<div class="col-md-8 mx-auto text-center">-->
+                <!--<a href="{% url 'transcriptions:collection' c.slug %}" class="btn btn-primary col mb-quarter">View</a>-->
+                <!--{% if request.user.is_staff %}-->
+                  <!--<a href="{% url 'transcriptions:delete collection' c.slug %}" class="btn btn-danger col mb-quarter">Delete</a>-->
+                  <!--<a href="{% url 'transcriptions:exportCSV collection' c.slug %}" class="btn btn-success col mb-quarter">Export to csv</a>-->
+                  <!--<a href="{% url 'transcriptions:exportBagit collection' c.slug %}" class="btn btn-success col">Export to Bagit</a>-->
+                  <!--<a href="{% url 'transcriptions:report collection' c.slug %}" class="mt-half">Report</a>-->
+                <!--{% endif %}-->
+              <!--</div>-->
           </div>
           {% endfor %}
           {% endif %}
+        </div>
           {% if request.user.is_staff %}
           <div class="col-12 col-md-4 col-lg-3 mb-default card shadow-regular bg-lightest-gray">
             <div class="d-flex card-body align-items-center justify-content-center">
@@ -35,9 +52,9 @@
             </div>
           </div>
           {% endif %}
-        </div>
       </div>
     </div>
   </div>
 </div>
 {% endblock main_content %}
+

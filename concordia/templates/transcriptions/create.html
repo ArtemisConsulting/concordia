@@ -108,6 +108,16 @@ input[type=submit] {
         <input type="url" class="form-control" id="url" name="url">
       </div>
 
+      <div class="form-group col-lg-6 col-md-8 mx-auto">
+        <label for="thumbnail">Thumbnail</label>
+        <input type="file" class="form-control" id="thumbnail" name="thumbnail" accept="image/png, image/jpeg" />
+      </div>
+
+      <div class="form-group col-lg-6 col-md-8 mx-auto">
+        <label for="description">Description</label>
+        <input type="textarea" class="form-control" id="description" name="description">
+      </div>
+
       <div class="d-flex col-lg-6 col-md-8 mx-auto justify-content-between pt-half">
         <button class="btn btn-primary mr-auto" id="create_btn">Create</button>
         <a href="/transcribe" role="button" class="btn btn-dark">Cancel</a>
@@ -194,12 +204,15 @@ $("#create_btn").click(function(){
     var name = $("#name").val();
     var project_name = $("#project-name").val();
     var url = $("#url").val();
+    var description = $("#description").val();
+    var thumbnail = $("#thumbnail")[0].files[0];
 
     if(name && project_name && url){
         $.ajax({
             url: '/create_collection/',
             type: 'post',
-            data: {"name": name, "url": url, "project": project_name,'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()},
+            data: {"name": name, "url": url, "project": project_name,'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                    "description": description, "thumbnail": thumbnail},
             success: function(data, textStatus, jqXHR) {
                 $(".loading").removeClass("d-none");
                 $("#task_id").val(data['task_id']);
@@ -252,5 +265,6 @@ $(function(){
 
 </script>
 {% endblock main_content %}
+
 
 
