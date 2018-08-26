@@ -10,6 +10,8 @@ class CreateCollection(serializers.Serializer):
     name = serializers.CharField()
     url = serializers.URLField()
     project = serializers.CharField()
+    thumbnail = serializers.ImageField(max_length=500, allow_empty_file=True, required=False)
+    description = serializers.CharField(allow_blank=True, required=False)
     create_type = serializers.CharField(required=False)
 
     def validate(self, data):

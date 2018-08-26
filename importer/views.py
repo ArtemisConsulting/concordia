@@ -17,6 +17,7 @@ from importer.serializer import CreateCollection
 from importer.tasks import (download_write_collection_item_assets,
                             download_write_item_assets, get_item_id_from_item_url)
 
+
 logger = getLogger(__name__)
 
 
@@ -31,11 +32,15 @@ class CreateCollectionView(generics.CreateAPIView):
         project = data.get("project")
         url = data.get("url")
         create_type = data.get("create_type")
+        thumbnail = request.data.get("thumbnail")
+        description = data.get("description")
         collection_details = {
             "collection_name": name,
             "collection_slug": slugify(name),
             "subcollection_name": project,
             "subcollection_slug": slugify(project),
+            "thumbnail": thumbnail,
+            "description": description
         }
 
         if create_type == "collections":
@@ -276,7 +281,12 @@ def check_and_save_collection_completeness(ciac):
                 slug=ciac.collection_task.collection_slug,
                 description=ciac.collection_task.collection_name,
                 is_active=True,
+                defaults={'thumbnail': ciac.collection_task.thumbnail, 'description': ciac.collection_task.description}
             )
+            if created:
+                collection.thumbnail = ciac.collection_task.thumbnail
+                collection.description = ciac.collection_task.description
+                collection.save()
 
             subcollection = Subcollection.objects.create(
                 title=ciac.collection_task.subcollection_name,

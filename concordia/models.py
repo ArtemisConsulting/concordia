@@ -52,6 +52,7 @@ class Collection(MetricsModelMixin("collection"), models.Model):
     slug = models.SlugField(max_length=50, unique=True)
     description = models.TextField(blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
+    thumbnail = models.ImageField(upload_to='collections/thumbnails/', blank=True, null=True)
     end_date = models.DateTimeField(null=True, blank=True)
     metadata = JSONField(default=metadata_default)
     is_active = models.BooleanField(default=False)
