@@ -7,7 +7,7 @@ class CollectionTaskDetails(models.Model):
     subcollection_name = models.CharField(max_length=250)
     subcollection_slug = models.SlugField(max_length=250)
     thumbnail = models.ImageField(upload_to='collections/thumbnails/', blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True, default='')
     # collection_page_count = models.IntegerField(null=True, blank=True, default=0)
     collection_item_count = models.IntegerField(null=True, blank=True, default=0)
     collection_asset_count = models.IntegerField(null=True, blank=True, default=0)

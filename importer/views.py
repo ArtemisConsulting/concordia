@@ -60,8 +60,14 @@ class CreateCollectionView(generics.CreateAPIView):
             ctd, created = CollectionTaskDetails.objects.get_or_create(
                 collection_slug=slugify(name),
                 subcollection_slug=slugify(project),
-                defaults={"collection_name": name, "subcollection_name": project},
+                defaults={"collection_name": name, "subcollection_name": project,
+                          "thumbnail": thumbnail, "description": description}
             )
+            if not created:
+                ctd.thumbnail = thumbnail
+                ctd.description = description
+                ctd.save()
+
             CollectionItemAssetCount.objects.create(
                 collection_task=ctd,
                 collection_item_identifier=item_id,
@@ -283,7 +289,7 @@ def check_and_save_collection_completeness(ciac):
                 is_active=True,
                 defaults={'thumbnail': ciac.collection_task.thumbnail, 'description': ciac.collection_task.description}
             )
-            if created:
+            if not created:
                 collection.thumbnail = ciac.collection_task.thumbnail
                 collection.description = ciac.collection_task.description
                 collection.save()
