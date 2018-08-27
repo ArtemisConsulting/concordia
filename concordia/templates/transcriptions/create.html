@@ -207,12 +207,22 @@ $("#create_btn").click(function(){
     var description = $("#description").val();
     var thumbnail = $("#thumbnail")[0].files[0];
 
+    var formData = new FormData();
+    formData.append("name",name);
+    formData.append("url",url);
+    formData.append("project",project_name);
+    formData.append("csrfmiddlewaretoken",$("input[name=csrfmiddlewaretoken]").val());
+    formData.append("description",description);
+    formData.append("thumbnail",thumbnail);
+
     if(name && project_name && url){
         $.ajax({
             url: '/create_collection/',
-            type: 'post',
-            data: {"name": name, "url": url, "project": project_name,'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
-                    "description": description, "thumbnail": thumbnail},
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json",
             success: function(data, textStatus, jqXHR) {
                 $(".loading").removeClass("d-none");
                 $("#task_id").val(data['task_id']);
