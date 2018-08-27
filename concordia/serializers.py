@@ -5,6 +5,7 @@ from . import models
 
 class CollectionListSerializer(serializers.ModelSerializer):
     asset_count = serializers.IntegerField(source="asset_set.count", read_only=True)
+    thumbnail = serializers.URLField(read_only=True)
 
     class Meta:
         model = models.Collection
@@ -17,6 +18,7 @@ class CollectionListSerializer(serializers.ModelSerializer):
             "end_date",
             "status",
             "asset_count",
+            "thumbnail",
         )
 
 
