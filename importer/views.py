@@ -32,14 +32,16 @@ class CreateCollectionView(generics.CreateAPIView):
         project = data.get("project")
         url = data.get("url")
         create_type = data.get("create_type")
-        thumbnail = request.data.get("thumbnail")
+        collection_thumbnail = request.data.get("collection_thumbnail")
+        project_thumbnail = request.data.get("project_thumbnail")
         description = data.get("description")
         collection_details = {
             "collection_name": name,
             "collection_slug": slugify(name),
             "subcollection_name": project,
             "subcollection_slug": slugify(project),
-            "thumbnail": thumbnail,
+            "collection_thumbnail": collection_thumbnail,
+            "project_thumbnail": project_thumbnail,
             "description": description
         }
 
@@ -61,11 +63,16 @@ class CreateCollectionView(generics.CreateAPIView):
                 collection_slug=slugify(name),
                 subcollection_slug=slugify(project),
                 defaults={"collection_name": name, "subcollection_name": project,
-                          "thumbnail": thumbnail, "description": description}
+                          "collection_thumbnail": collection_thumbnail,
+                          "project_thumbnail": project_thumbnail, "description": description}
             )
             if not created:
-                ctd.thumbnail = thumbnail
-                ctd.description = description
+                if collection_thumbnail:
+                    ctd.collection_thumbnail = collection_thumbnail
+                if description:
+                    ctd.description = description
+                if project_thumbnail:
+                    ctd.project_thumbnail = project_thumbnail
                 ctd.save()
 
             CollectionItemAssetCount.objects.create(
@@ -287,10 +294,11 @@ def check_and_save_collection_completeness(ciac):
                 slug=ciac.collection_task.collection_slug,
                 description=ciac.collection_task.collection_name,
                 is_active=True,
-                defaults={'thumbnail': ciac.collection_task.thumbnail, 'description': ciac.collection_task.description}
+                defaults={'thumbnail': ciac.collection_task.collection_thumbnail,
+                          'description': ciac.collection_task.description}
             )
             if not created:
-                collection.thumbnail = ciac.collection_task.thumbnail
+                collection.thumbnail = ciac.collection_task.collection_thumbnail
                 collection.description = ciac.collection_task.description
                 collection.save()
 
@@ -299,6 +307,8 @@ def check_and_save_collection_completeness(ciac):
                 collection=collection,
                 slug=ciac.collection_task.subcollection_slug,
             )
+        subcollection.thumbnail = ciac.collection_task.project_thumbnail
+        subcollection.save()
 
         project_local_path = os.path.join(
             settings.IMPORTER["IMAGES_FOLDER"],

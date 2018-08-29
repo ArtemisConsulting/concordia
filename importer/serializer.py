@@ -10,7 +10,8 @@ class CreateCollection(serializers.Serializer):
     name = serializers.CharField()
     url = serializers.URLField()
     project = serializers.CharField()
-    thumbnail = serializers.ImageField(max_length=500, required=False)
+    collection_thumbnail = serializers.ImageField(max_length=500, required=False)
+    project_thumbnail = serializers.ImageField(max_length=500, required=False)
     description = serializers.CharField(required=False)
     create_type = serializers.CharField(required=False)
 
