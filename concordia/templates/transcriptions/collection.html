@@ -4,6 +4,8 @@
 
 {% endblock head_content %}
 {% block main_content %}
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <div class="container-fluid py-default">
     <div class="row">
         <div class="col-md-10 mx-auto bg-offwhite rounded">
@@ -27,6 +29,12 @@
                                 <div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
                                     <a href="{% url 'transcriptions:delete_asset' collection.slug a.slug %}#tab-tag" class="btn btn-primary btn-lg w-100">Hide</a>
                                 </div>
+				<div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
+				    <a href="#" class="collection_set_thumbnail" data-collection="{{ collection.slug }}" data-project="{{ a.subcollection.slug }}" data-thumbnail="{{ a.slug }}">Set as Collection Thumbnail</a>
+				</div>
+				<div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
+				    <a href="#" class="item_set_thumbnail" data-collection="{{ collection.slug }}" data-project="{{ a.subcollection.slug }}"  data-thumbnail="{{ a.slug }}">Project Thumbnail</a>
+				</div>
                             {% endif %}
                         </div>
                         <a href="{% url 'transcriptions:asset' collection.slug a.slug %}" class="collection-image-link"><h6 class="text-center blue-text my-half">{{ a.slug }}</h6></a>
@@ -50,4 +58,21 @@
         </div>
     </div>
 </div>
+<script>
+    $( document ).ready(function() {
+        $(".collection_set_thumbnail").click(function(){
+            var collection_slug = $(this).attr("data-collection");
+            var project_slug = $(this).attr("data-project");
+	    var thumbnail = $(this).attr("data-thumbnail");
+            console.log("collection_slug, project_slug, thumbnail: ", collection_slug, project_slug, thumbnail);
+        });
+
+        $(".item_set_thumbnail").click(function(){
+            var collection_slug = $(this).attr("data-collection");
+            var project_slug = $(this).attr("data-project");
+            var thumbnail = $(this).attr("data-thumbnail");
+            console.log("collection_slug, project_slug, thumbnail: ", collection_slug, project_slug, thumbnail);
+        });
+    });
+</script>
 {% endblock main_content %}
