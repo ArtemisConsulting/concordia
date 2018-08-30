@@ -9,9 +9,9 @@ from rest_framework import generics, exceptions
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.response import Response
 
-from .models import PageInUse, User, Collection, Asset, Transcription, Tag, UserAssetTagCollection
+from .models import PageInUse, User, Collection, Asset, Transcription, Tag, UserAssetTagCollection, Subcollection
 from .serializers import PageInUseSerializer, CollectionDetailSerializer, AssetSerializer, \
-    TranscriptionSerializer, UserAssetTagSerializer, TagSerializer
+    TranscriptionSerializer, UserAssetTagSerializer, TagSerializer, AssetThumbnailSerializer
 
 
 class ConcordiaAPIAuth(BasicAuthentication):
@@ -239,3 +239,22 @@ class TagCreate(generics.ListCreateAPIView):
             pass
         return Response(serializer.data)
 
+
+class CollectionThumbnailUpdate(generics.UpdateAPIView):
+
+    model = Collection
+    authentication_classes = (ConcordiaAPIAuth,)
+    serializer_class = AssetThumbnailSerializer
+    queryset = Collection.objects.all()
+    lookup_field = 'slug'
+
+
+class SubcollectionThumbnailUpdate(generics.UpdateAPIView):
+
+    model = Subcollection
+    authentication_classes = (ConcordiaAPIAuth,)
+    serializer_class = AssetThumbnailSerializer
+    lookup_fields = ('slug', 'project_slug')
+
+    def get_object(self):
+        return get_object_or_404(Subcollection, collection__slug=self.kwargs['slug'], slug=self.kwargs['project_slug'])

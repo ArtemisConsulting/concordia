@@ -117,6 +117,8 @@ urlpatterns = [
     # Apps
     re_path(r"^forum/", include(board.urls)),
     # Web Services
+    re_path(r'^ws/collection/thumbnail/(?P<slug>(.*?))/$', views_ws.CollectionThumbnailUpdate.as_view()),
+    re_path(r'^ws/project/thumbnail/(?P<slug>(.*?))/(?P<project_slug>(.*?))/$', views_ws.SubcollectionThumbnailUpdate.as_view()),
     re_path(r'^ws/page_in_use/(?P<page_url>(.*?))/$', views_ws.PageInUseGet.as_view()),
     re_path(r'^ws/page_in_use_update/(?P<page_url>(.*?))/$', views_ws.PageInUsePut.as_view()),
     re_path(r'^ws/page_in_use/$', views_ws.PageInUseCreate.as_view()),

@@ -106,3 +106,19 @@ class UserAssetTagSerializer(serializers.ModelSerializer):
         fields = (
             "asset", "user_id", "tags"
             )
+
+
+class AssetThumbnailSerializer(serializers.Serializer):
+    thumbnail = serializers.CharField()
+
+    def validate_thumbnail(self, value):
+        try:
+            models.Asset.objects.get(media_url=value)
+        except models.Asset.DoesNotExist:
+            raise serializers.ValidationError("The asset url not found in assets")
+        return value
+
+    def update(self, instance, validated_data):
+        instance.thumbnail = validated_data.get('thumbnail', instance.thumbnail)
+        instance.save()
+        return instance

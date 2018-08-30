@@ -292,7 +292,6 @@ def check_and_save_collection_completeness(ciac):
             collection, created = Collection.objects.get_or_create(
                 title=ciac.collection_task.collection_name,
                 slug=ciac.collection_task.collection_slug,
-                description=ciac.collection_task.collection_name,
                 is_active=True,
                 defaults={'thumbnail': ciac.collection_task.collection_thumbnail,
                           'description': ciac.collection_task.description}
@@ -343,15 +342,23 @@ def check_and_save_item_completeness(ciac, item_id):
             collection, created = Collection.objects.get_or_create(
                 title=ciac.collection_task.collection_name,
                 slug=ciac.collection_task.collection_slug,
-                description=ciac.collection_task.collection_name,
                 is_active=True,
+                defaults={'thumbnail': ciac.collection_task.collection_thumbnail,
+                          'description': ciac.collection_task.description}
             )
+            if not created:
+                collection.thumbnail = ciac.collection_task.collection_thumbnail
+                collection.description = ciac.collection_task.description
+                collection.save()
 
             subcollection = Subcollection.objects.create(
                 title=ciac.collection_task.subcollection_name,
                 collection=collection,
                 slug=ciac.collection_task.subcollection_slug,
             )
+        subcollection.thumbnail = ciac.collection_task.project_thumbnail
+        subcollection.save()
+
         item_local_path = os.path.join(
             settings.IMPORTER["IMAGES_FOLDER"],
             subcollection.collection.slug,
