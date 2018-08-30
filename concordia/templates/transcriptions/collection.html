@@ -4,6 +4,8 @@
 
 {% endblock head_content %}
 {% block main_content %}
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <div class="container-fluid py-default">
     <div class="row">
         <div class="col-md-10 mx-auto bg-offwhite rounded">
@@ -27,6 +29,12 @@
                                 <div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
                                     <a href="{% url 'transcriptions:delete_asset' collection.slug a.slug %}#tab-tag" class="btn btn-primary btn-lg w-100">Hide</a>
                                 </div>
+				<div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
+				    <a href="#" class="collection btn btn-primary" data-toggle="modal" data-target="#thumbnailConfirmModal" data-collection="{{ collection.slug }}" data-project="{{ a.subcollection.slug }}" data-thumbnail="{{ a.media_url }}" data-ttype="collection">Set as Collection Thumbnail</a>
+				</div>
+				<div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
+				    <a href="#" class="project btn btn-primary" data-toggle="modal" data-target="#thumbnailConfirmModal" data-collection="{{ collection.slug }}" data-project="{{ a.subcollection.slug }}"  data-thumbnail="{{ a.media_url }}" data-ttype="project">Set as Project Thumbnail</a>
+				</div>
                             {% endif %}
                         </div>
                         <a href="{% url 'transcriptions:asset' collection.slug a.slug %}" class="collection-image-link"><h6 class="text-center blue-text my-half">{{ a.slug }}</h6></a>
@@ -50,4 +58,60 @@
         </div>
     </div>
 </div>
+<!-- Confirmation Modal -->
+<div class="modal fade" id="thumbnailConfirmModal" tabindex="-1" role="dialog" aria-labelledby="thumbnailConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="thumbnailConfirmModalLabel">Confirm Thumbnail</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure want to set it as thumbnail ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="thumbnailconfirmbtn">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $( document ).ready(function() {
+        $(document).on('shown.bs.modal',"#thumbnailConfirmModal", function (e) {
+            var $invoker = $(e.relatedTarget);
+
+	    $("#thumbnailconfirmbtn").click(function(e){
+                var thumbnail_type = $($invoker[0]).attr('data-ttype');
+                var collection_slug = $($invoker[0]).attr("data-collection");
+                var project_slug = $($invoker[0]).attr("data-project");
+                var thumbnail = $($invoker[0]).attr("data-thumbnail");
+                console.log("collection_slug, project_slug, thumbnail: ", collection_slug, project_slug, thumbnail, thumbnail_type);
+		$('#thumbnailConfirmModal').modal('hide');
+
+		var url = '/ws/'+ thumbnail_type + '/thumbnail/' + collection_slug + '/' + project_slug + '/';
+
+                $.ajax({
+                    url: url,
+                    type: 'PUT',
+                    data: {'thumbnail': thumbnail},
+                    success: function(data, textStatus, jqXHR) {
+                        $('#collectionConfirmModal').modal('hide');
+                        if(data['state']){
+                            $("#"+collection_slug).text('Unpublish');
+                        }else{
+                            $("#"+collection_slug).text('Publish');
+                        }
+                    }
+                }).fail(function(data, jqXHR, textStatus, errorThrown) {
+                   console.log("error: ", data);
+                });
+             });
+        });
+    });
+</script>
+
 {% endblock main_content %}
