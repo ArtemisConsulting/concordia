@@ -32,12 +32,16 @@
                                 <div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
                                     <a href="{% url 'transcriptions:delete_asset' collection.slug a.slug %}#tab-tag" class="btn btn-primary btn-lg w-100">Hide</a>
                                 </div>
+                                {% ifnotequal collection.thumbnail a.media_url %}
 				<div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
 				    <a href="#" class="collection btn btn-primary" data-toggle="modal" data-target="#thumbnailConfirmModal" data-collection="{{ collection.slug }}" data-project="{{ a.subcollection.slug }}" data-thumbnail="{{ a.media_url }}" data-ttype="collection">Set as Collection Thumbnail</a>
 				</div>
+				{% endifnotequal %}
+                                {% ifnotequal a.subcollection.thumbnail a.media_url %}
 				<div class="d-flex justify-content-center col-9 col-md-8 mx-auto mt-half">
 				    <a href="#" class="project btn btn-primary" data-toggle="modal" data-target="#thumbnailConfirmModal" data-collection="{{ collection.slug }}" data-project="{{ a.subcollection.slug }}"  data-thumbnail="{{ a.media_url }}" data-ttype="project">Set as Project Thumbnail</a>
 				</div>
+                                {% endifnotequal %}
                             {% endif %}
                         </div>
                         <a href="{% url 'transcriptions:asset' collection.slug a.slug %}" class="collection-image-link"><h6 class="text-center blue-text my-half">{{ a.slug }}</h6></a>
