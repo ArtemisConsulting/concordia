@@ -9,6 +9,9 @@
 <div class="container-fluid py-default">
     <div class="row">
         <div class="col-md-10 mx-auto bg-offwhite rounded">
+	    <div class="" id="resultmsg">
+	        <p id="msg"></p>
+	    </div>
             <h3 class="mt-default mb-half ml-half">{{ collection }}</h3>
             <p class="ml-default mb-default">{{ collection.description }}</p>
             <div class="row">
@@ -91,23 +94,28 @@
                 var thumbnail = $($invoker[0]).attr("data-thumbnail");
                 console.log("collection_slug, project_slug, thumbnail: ", collection_slug, project_slug, thumbnail, thumbnail_type);
 		$('#thumbnailConfirmModal').modal('hide');
-
-		var url = '/ws/'+ thumbnail_type + '/thumbnail/' + collection_slug + '/' + project_slug + '/';
+		
+  		if(thumbnail_type=='collection'){
+		    var url = '/ws/'+ thumbnail_type + '/thumbnail/' + collection_slug + '/';
+		}
+		else{
+                    var url = '/ws/'+ thumbnail_type + '/thumbnail/' + collection_slug + '/' + project_slug + '/';
+		}
 
                 $.ajax({
                     url: url,
                     type: 'PUT',
                     data: {'thumbnail': thumbnail},
                     success: function(data, textStatus, jqXHR) {
-                        $('#collectionConfirmModal').modal('hide');
-                        if(data['state']){
-                            $("#"+collection_slug).text('Unpublish');
-                        }else{
-                            $("#"+collection_slug).text('Publish');
-                        }
-                    }
+			$("#thumbnailConfirmModal").modal('hide');
+ 			$("#msg").html("Thumbnail has set successfully "+data['thumbnail']);
+			$("#resultmsg").show();	
+		    }
                 }).fail(function(data, jqXHR, textStatus, errorThrown) {
                    console.log("error: ", data);
+		   $("#thumbnailConfirmModal").modal('hide');
+                   $("#msg").html(data);
+                   $("#resultmsg").show();
                 });
              });
         });
