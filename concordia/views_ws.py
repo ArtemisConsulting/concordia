@@ -241,6 +241,12 @@ class TagCreate(generics.ListCreateAPIView):
 
 
 class CollectionThumbnailUpdate(generics.UpdateAPIView):
+    """
+    Patch
+    this is for updating the collection thumbnail for existing collection
+    in future if we want to update any other collection fields we can update using this
+    serializer
+    """
 
     model = Collection
     authentication_classes = (ConcordiaAPIAuth,)
@@ -248,9 +254,17 @@ class CollectionThumbnailUpdate(generics.UpdateAPIView):
     queryset = Collection.objects.all()
     lookup_field = 'slug'
 
+    def get_serializer_context(self):
+        return {'slug': self.kwargs['slug']}
+
 
 class SubcollectionThumbnailUpdate(generics.UpdateAPIView):
-
+    """
+    Patch
+    this is for updating the subcollection(project) thumbnail for existing subcollection(project)
+    in future if we want to update any other subcollection(project) fields we can update using this
+    serializer
+    """
     model = Subcollection
     authentication_classes = (ConcordiaAPIAuth,)
     serializer_class = AssetThumbnailSerializer
@@ -258,3 +272,6 @@ class SubcollectionThumbnailUpdate(generics.UpdateAPIView):
 
     def get_object(self):
         return get_object_or_404(Subcollection, collection__slug=self.kwargs['slug'], slug=self.kwargs['project_slug'])
+
+    def get_serializer_context(self):
+        return {'slug': self.kwargs['slug'], 'project_slug': self.kwargs['project_slug']}

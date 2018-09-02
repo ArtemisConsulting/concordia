@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from . import models
+from importer.models import CollectionTaskDetails
 
 
 class CollectionListSerializer(serializers.ModelSerializer):
@@ -121,4 +122,12 @@ class AssetThumbnailSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         instance.thumbnail = validated_data.get('thumbnail', instance.thumbnail)
         instance.save()
+        if self.context.get('slug') and self.context.get('project_slug'):
+            ctd = CollectionTaskDetails.objects.get(collection_slug=self.context.get('slug'),
+                                              subcollection_slug=self.context.get('project_slug'))
+            ctd.project_thumbnail = validated_data.get('thumbnail', instance.thumbnail)
+        elif self.context.get('slug'):
+            ctd = CollectionTaskDetails.objects.get(collection_slug=self.context.get('slug'))
+            ctd.collection_thumbnail = validated_data.get('thumbnail', instance.thumbnail)
+        ctd.save()
         return instance

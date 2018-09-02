@@ -9,7 +9,9 @@ import logging
 from rest_framework import status
 
 from concordia.models import PageInUse, User, Collection, Status, Asset, MediaType, \
-    Transcription, Tag, UserAssetTagCollection
+    Transcription, Tag, UserAssetTagCollection, Subcollection
+from concordia.serializers import AssetThumbnailSerializer
+from importer.models import CollectionTaskDetails
 
 logging.disable(logging.CRITICAL)
 
@@ -955,4 +957,231 @@ class ViewWSTest_Concordia(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(json_resp["results"]), 3)
 
+    def test_collection_thumbnail_update_not_exist(self):
+        """
+        Test collection thumbnail upadte which collection not exist
+        """
 
+        # Arrange
+        self.login_user()
+        thumbnail_data={"thumbnail": "some_image_url"}
+
+        # Act
+        response = self.client.patch("/ws/collection/thumbnail/slug1/",
+                                     data=json.dumps(thumbnail_data),
+                                     content_type='application/json')
+
+        # Assert
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data.get('detail'), "Not found.")
+
+
+    def test_collection_thumbnail_not_update(self):
+        """
+        Test collection thumbnail not update due to not existance thumbnail url in assets
+        """
+
+        # Arrange
+        self.login_user()
+
+        # create collection
+        self.collection = Collection(
+            title="TextCollection",
+            slug="slug1",
+            description="Collection Description",
+            metadata={"key": "val1"},
+            status=Status.EDIT,
+        )
+        self.collection.save()
+
+        thumbnail_data={"thumbnail": "some_image_url"}
+        serializer = AssetThumbnailSerializer(data=thumbnail_data)
+        serializer.is_valid()
+
+        # Act
+        response = self.client.patch("/ws/collection/thumbnail/slug1/",
+                                     data=json.dumps(thumbnail_data),
+                                     content_type='application/json')
+
+        # Assert
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertJSONEqual(response.content, serializer.errors)
+
+    def test_collection_thumbnail_update(self):
+        """
+        Test collection thumbnail update
+        """
+
+        # Arrange
+        self.login_user()
+
+        # create collection
+        self.collection = Collection(
+            title="TextCollection",
+            slug="slug1",
+            description="Collection Description",
+            metadata={"key": "val1"},
+            status=Status.EDIT,
+        )
+        self.collection.save()
+        self.asset = Asset(
+            title="TestAsset",
+            slug="Asset1",
+            description="Asset Description",
+            media_url="http://www.foo.com/1/2/3",
+            media_type=MediaType.IMAGE,
+            collection=self.collection,
+            metadata={"key": "val2"},
+            status=Status.EDIT,
+        )
+        self.asset.save()
+
+        self.ctd_data = {
+            "collection_name": 'slug1',
+            "collection_slug": 'slug1',
+            "subcollection_name": 'project_slug1',
+            "subcollection_slug": 'project_slug1'
+        }
+        CollectionTaskDetails.objects.create(**self.ctd_data)
+
+        thumbnail_data={"thumbnail": "http://www.foo.com/1/2/3"}
+        serializer = AssetThumbnailSerializer(data=thumbnail_data)
+        serializer.is_valid()
+
+        # Act
+        response = self.client.patch("/ws/collection/thumbnail/slug1/",
+                                     data=json.dumps(thumbnail_data),
+                                     content_type='application/json')
+        collection = Collection.objects.get(slug='slug1')
+        ctd = CollectionTaskDetails.objects.get(collection_slug='slug1')
+
+        # Assert
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('thumbnail'), 'http://www.foo.com/1/2/3')
+        self.assertEqual(response.data.get('thumbnail'), collection.thumbnail)
+        self.assertEqual(response.data.get('thumbnail'), ctd.collection_thumbnail)
+
+    def test_subcollection_thumbnail_update_not_exist(self):
+        """
+        Test project thumbnail upadte which projecy not exist
+        """
+
+        # Arrange
+        self.login_user()
+        thumbnail_data={"thumbnail": "some_image_url"}
+
+        # Act
+        response = self.client.patch("/ws/project/thumbnail/slug1/project_slug1/",
+                                     data=json.dumps(thumbnail_data),
+                                     content_type='application/json')
+
+        # Assert
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data.get('detail'), "Not found.")
+
+    def test_subcollection_thumbnail_not_update(self):
+        """
+        Test project thumbnail not update due to not existance thumbnail url in assets
+        """
+
+        # Arrange
+        self.login_user()
+
+        # create collection
+        self.collection = Collection(
+            title="TextCollection",
+            slug="slug1",
+            description="Collection Description",
+            metadata={"key": "val1"},
+            status=Status.EDIT,
+        )
+        self.collection.save()
+
+        # create subcollection
+        self.project = Subcollection(
+            title="TextSubCollection",
+            slug="project_slug1",
+            collection = self.collection,
+            metadata={"key": "val1"},
+            status=Status.EDIT,
+        )
+        self.project.save()
+
+        thumbnail_data={"thumbnail": "some_image_url"}
+        serializer = AssetThumbnailSerializer(data=thumbnail_data)
+        serializer.is_valid()
+
+        # Act
+        response = self.client.patch("/ws/project/thumbnail/slug1/project_slug1/",
+                                     data=json.dumps(thumbnail_data),
+                                     content_type='application/json')
+
+        # Assert
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertJSONEqual(response.content, serializer.errors)
+
+    def test_subcollection_thumbnail_update(self):
+        """
+        Test project thumbnail update
+        """
+
+        # Arrange
+        self.login_user()
+
+        # create collection
+        self.collection = Collection(
+            title="TextCollection",
+            slug="slug1",
+            description="Collection Description",
+            metadata={"key": "val1"},
+            status=Status.EDIT,
+        )
+        self.collection.save()
+
+        # create subcollection
+        self.project = Subcollection(
+            title="TextSubCollection",
+            slug="project_slug1",
+            collection = self.collection,
+            metadata={"key": "val1"},
+            status=Status.EDIT,
+        )
+        self.project.save()
+
+        self.asset = Asset(
+            title="TestAsset",
+            slug="Asset1",
+            description="Asset Description",
+            media_url="http://www.foo.com/1/2/3",
+            media_type=MediaType.IMAGE,
+            collection=self.collection,
+            subcollection =self.project,
+            metadata={"key": "val2"},
+            status=Status.EDIT,
+        )
+        self.asset.save()
+        self.ctd_data = {
+            "collection_name": 'slug1',
+            "collection_slug": 'slug1',
+            "subcollection_name": 'project_slug1',
+            "subcollection_slug": 'project_slug1'
+        }
+        CollectionTaskDetails.objects.create(**self.ctd_data)
+
+        thumbnail_data={"thumbnail": "http://www.foo.com/1/2/3"}
+        serializer = AssetThumbnailSerializer(data=thumbnail_data)
+        serializer.is_valid()
+
+        # Act
+        response = self.client.patch("/ws/project/thumbnail/slug1/project_slug1/",
+                                     data=json.dumps(thumbnail_data),
+                                     content_type='application/json')
+
+        project = Subcollection.objects.get(slug='project_slug1', collection__slug='slug1')
+        ctd = CollectionTaskDetails.objects.get(subcollection_slug='project_slug1', collection_slug='slug1')
+
+        # Assert
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('thumbnail'), 'http://www.foo.com/1/2/3')
+        self.assertEqual(response.data.get('thumbnail'), project.thumbnail)
+        self.assertEqual(response.data.get('thumbnail'), ctd.project_thumbnail)
