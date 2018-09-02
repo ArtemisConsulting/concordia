@@ -28,7 +28,7 @@ from rest_framework.test import APIRequestFactory
 from concordia.forms import (CaptchaEmbedForm, ConcordiaContactUsForm,
                              ConcordiaUserEditForm, ConcordiaUserForm)
 from concordia.models import (Asset, Collection, PageInUse, Status, Subcollection, Tag,
-                              Transcription, UserAssetTagCollection, UserProfile)
+                              Transcription, UserAssetTagCollection, UserProfile, Subcollection)
 from concordia.views_ws import PageInUseCreate, PageInUsePut
 from importer.views import CreateCollectionView
 
@@ -171,8 +171,15 @@ class ConcordiaCollectionView(TemplateView):
             collection = Collection.objects.get(slug=self.args[0])
         except Collection.DoesNotExist:
             raise Http404
+
+        try:
+            subcollection = Subcollection.objects.get(slug=self.args[1])
+        except Subcollection.DoesNotExist:
+            raise Http404
+
         asset_list = Asset.objects.filter(
             collection=collection,
+            subcollection=subcollection,
             status__in=[Status.EDIT, Status.SUBMITTED, Status.COMPLETED, Status.ACTIVE],
         ).order_by("title", "sequence")
         paginator = Paginator(asset_list, ASSETS_PER_PAGE)

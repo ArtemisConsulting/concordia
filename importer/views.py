@@ -191,7 +191,7 @@ def save_collection_item_assets(subcollection, the_path, item_id=None):
             sequence = int(os.path.splitext(filename)[0])
             Asset.objects.create(
                 title=title,
-                slug="{0}{1}".format(title, sequence),
+                slug="{0}{1}{2}".format(subcollection.slug, title, sequence),
                 description="{0} description".format(title),
                 media_url=media_url,
                 media_type="IMG",
