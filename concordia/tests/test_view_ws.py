@@ -388,11 +388,9 @@ class ViewWSTest_Concordia(TestCase):
         # Act
         response = self.client.get("/ws/asset/slug2/")
 
-        json_resp = json.loads(response.content)
-
         # Assert
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(json_resp['results']), 2)
+        self.assertEqual(len(response.json()['results']), 2)
 
     def test_get_assets_by_collection_and_slug(self):
         """
@@ -596,11 +594,9 @@ class ViewWSTest_Concordia(TestCase):
         # Act
         response = self.client.get("/ws/page_in_use_filter/%s/%s/" % (self.user.username, test_url, ))
 
-        json_resp = json.loads(response.content)
-
         # Assert
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(len(json_resp['results']) > 0)
+        self.assertTrue(len(response.json()['results']) > 0)
 
     def test_PageInUse_filter_no_pages_get(self):
         """
@@ -622,11 +618,9 @@ class ViewWSTest_Concordia(TestCase):
         # Act
         response = self.client.get("/ws/page_in_use_filter/%s/%s/" % (self.user.username, test_url, ))
 
-        json_resp = json.loads(response.content)
-
         # Assert
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(json_resp['results']), 0)
+        self.assertEqual(len(response.json()['results']), 0)
 
     def test_Transcriptions_latest_get(self):
         """
@@ -701,11 +695,9 @@ class ViewWSTest_Concordia(TestCase):
 
         response = self.client.get("/ws/transcription/%s/" % self.asset.id)
 
-        json_resp = json.loads(response.content)
-
         # Assert
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json_resp["text"], t2_text)
+        self.assertEqual(response.json()["text"], t2_text)
 
     def test_Transcriptions_create_post(self):
         """
@@ -951,11 +943,9 @@ class ViewWSTest_Concordia(TestCase):
         # Act
         response = self.client.get("/ws/tags/%s/" % self.asset.id)
 
-        json_resp = json.loads(response.content)
-
         # Assert
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(json_resp["results"]), 3)
+        self.assertEqual(len(response.json()["results"]), 3)
 
     def test_collection_thumbnail_update_not_exist(self):
         """
@@ -1005,7 +995,7 @@ class ViewWSTest_Concordia(TestCase):
 
         # Assert
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertJSONEqual(response.content, serializer.errors)
+        self.assertEqual(response.json(), serializer.errors)
 
     def test_collection_thumbnail_update(self):
         """
@@ -1118,7 +1108,7 @@ class ViewWSTest_Concordia(TestCase):
 
         # Assert
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertJSONEqual(response.content, serializer.errors)
+        self.assertEqual(response.json(), serializer.errors)
 
     def test_subcollection_thumbnail_update(self):
         """
